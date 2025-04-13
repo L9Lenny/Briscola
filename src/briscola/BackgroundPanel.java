@@ -37,7 +37,7 @@ public class BackgroundPanel extends JPanel {
 		setLayout(null);
 
 		// Add copyright label
-		JLabel copyright = new JLabel("Copyright (c) 2024 Leonardo Belli");
+		JLabel copyright = new JLabel("Copyright (c) 2025 Leonardo Belli");
 		copyright.setFont(new Font("Serif", Font.PLAIN, 14));
 		copyright.setBounds(960, 793, 428, 30);
 		copyright.setForeground(new Color(51,51,51));
