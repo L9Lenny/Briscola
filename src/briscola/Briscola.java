@@ -70,6 +70,10 @@ public class Briscola {
 			
 			this.db = db;
 			login = new Login(this, db);
+			String[] credential = login.getFm().readCredentials();
+			if (credential != null) {
+				db.loginUser(credential[0], credential[1]);
+			}
             Register register = new Register(login, login.getDb());
 
 			if(n == 10){

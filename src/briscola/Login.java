@@ -136,8 +136,9 @@ public class Login {
 				Briscola.getFrame().revalidate();
 				frame.setVisible(false);
 			}
-
-            writeLogin(chckbxNewCheckBox.isSelected());
+			if (chckbxNewCheckBox.isSelected()){
+				writeLogin(txtCcc.getText(), textField.getPassword());
+			}
 		});
 		btnNewButton.setBackground(Color.CYAN);
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -198,12 +199,17 @@ public class Login {
 	 */
 
 	private boolean checkLogin() {
-		return fm.readBoolean();
+
+		if (fm.readCredentials() != null){
+			return true;
+		}else {
+			return false;
+		}
 	}
 
-	private void writeLogin(boolean value) {
+	private void writeLogin(String username, char[] password) {
 
-		fm.append(value);
+		fm.writeCredentials(username, new String(password));
 
 	}
 

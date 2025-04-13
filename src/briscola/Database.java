@@ -103,6 +103,7 @@ public class Database {
 				statement.executeUpdate();
 				JOptionPane.showMessageDialog(frame, "Utente registrato con successo", "Register",
 						JOptionPane.INFORMATION_MESSAGE);
+				setRegistrationTimestamp();
 				log.info("User " + username + " registered successfully");
 			} catch (SQLIntegrityConstraintViolationException e) {
 				JOptionPane.showMessageDialog(frame, "Utente già registrato", "Register",
@@ -143,6 +144,7 @@ public class Database {
 			userPassword = password;
 			boolean loggedIn = resultSet.next();
 			if (loggedIn) {
+				updateLastLogin();
 				log.info("User " + username + " logged in successfully");
 			} else {
 				log.info("Failed login attempt for user " + username);
@@ -279,5 +281,52 @@ public class Database {
 	public String getPassword(){
 		return userPassword;
 	}
+
+	/**
+	 * Updates the last login timestamp for the current user.
+	 */
+	public void updateLastLogin() {
+		String sql;
+		try {
+			log.info("Preparing SQL query for updating last login timestamp");
+			sql = "UPDATE Giocatori SET ultimo_accesso = CURRENT_TIMESTAMP WHERE nomeUtente = ?";
+
+			try (PreparedStatement statement = conn.prepareStatement(sql)) {
+				statement.setString(1, nomeUtente);
+				int rowsAffected = statement.executeUpdate();
+
+				if (rowsAffected > 0) {
+					log.info("Last login timestamp updated for user: " + nomeUtente);
+				} else {
+					log.warn("No user found with username: " + nomeUtente);
+				}
+			}
+		} catch (SQLException e) {
+			log.error("SQL error while updating last login timestamp for user: " + nomeUtente);
+			throw new RuntimeException("Error updating last login timestamp", e);
+		}
+	}
+
+	/**
+	 * Sets the registration timestamp for a new user
+	 */
+	public void setRegistrationTimestamp() {
+		String sql = "UPDATE Giocatori SET data_registrazione = CURRENT_TIMESTAMP WHERE nomeUtente = ?";
+
+		try (PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.setString(1, nomeUtente);
+			int rowsAffected = statement.executeUpdate();
+
+			if (rowsAffected > 0) {
+				log.info("Registration timestamp set for user: " + nomeUtente);
+			} else {
+				log.warn("No user found with username: " + nomeUtente);
+			}
+		} catch (SQLException e) {
+			log.error("SQL error while setting registration timestamp for user: " + nomeUtente);
+			throw new RuntimeException("Error setting registration timestamp", e);
+		}
+	}
+
 
 }

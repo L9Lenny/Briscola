@@ -170,4 +170,75 @@ public class FileManager {
 		return path;
 	}
 
+
+	/**
+	 * Writes username and password to the file on separate lines.
+	 * Format:
+	 * username
+	 * password
+	 *
+	 * @param username The username to store
+	 * @param password The password to store
+	 */
+	public void writeCredentials(String username, String password) {
+		if (username == null || password == null) {
+			log.error("Username or password cannot be null");
+			throw new IllegalArgumentException("Username and password cannot be null");
+		}
+
+		if (username.contains("\n") || password.contains("\n")) {
+			log.error("Username or password contains newline characters");
+			throw new IllegalArgumentException("Username and password cannot contain newline characters");
+		}
+
+		try {
+			fw = new FileWriter(path, false);
+			fw.write(username + "\n" + password);
+			log.info("Credentials saved successfully for user: " + username);
+		} catch (IOException e) {
+			log.error("Error writing credentials to file " + path);
+			throw new RuntimeException("Error writing credentials to file", e);
+		} finally {
+			try {
+				if (fw != null) {
+					fw.close();
+				}
+			} catch (IOException e) {
+				log.error("Error closing FileWriter");
+			}
+		}
+	}
+
+	/**
+	 * Reads username and password from separate lines in the file.
+	 *
+	 * @return A String array where [0] is username and [1] is password.
+	 *         Returns null if the file doesn't contain both lines.
+	 */
+	public String[] readCredentials() {
+		try {
+			br = new BufferedReader(new FileReader(path));
+			String username = br.readLine();
+			String password = br.readLine();
+
+			if (username != null && password != null) {
+				log.info("Credentials loaded successfully");
+				return new String[]{username, password};
+			}
+			log.warn("No valid credentials found in file");
+			return null;
+		} catch (IOException e) {
+			log.error("Error reading credentials from file " + path);
+			throw new RuntimeException("Error reading credentials from file", e);
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				log.error("Error closing BufferedReader");
+			}
+		}
+	}
+
 }
